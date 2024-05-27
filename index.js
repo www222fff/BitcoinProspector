@@ -26,6 +26,7 @@ function sleep(ms) {
 }
 
 async function main() {
+    console.log("working--------------");
     while (true) {
         await sleep(2000);
         const response = await new Promise((resolve) => {
@@ -33,13 +34,12 @@ async function main() {
         });
 
         const bal = await balance(response.address);
-        //console.log("balance:", bal);
-
         if (bal > 0) {
             console.log("Got Balance:", bal, response);
             return;
         }
     }
+    console.log("end--------------");
 }
 
 main().catch((error) => {
