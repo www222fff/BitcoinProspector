@@ -4,8 +4,7 @@
   "description": "Simple API around Blockchain.info to: get address balance, get UTXOs, and push transactions.",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "build": "./build.sh"
+    "build": "node index.js"
   },
   "author": "Danny",
   "license": "The Unlicense",
