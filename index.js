@@ -28,7 +28,7 @@ function sleep(ms) {
 
 async function main() {
     while (true) {
-        await sleep(1000);
+        await sleep(2000);
         const response = await new Promise((resolve) => {
             Bitcoin.createWalletAddress((res) => resolve(res));
         });
