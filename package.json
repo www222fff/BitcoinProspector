@@ -1,7 +1,7 @@
 {
   "name": "ownYourBtcWallet",
   "version": "0.4.4",
-  "description": "Simple API around Blockchain.info to: get address balance, get UTXOs, and push transactions.",
+  "description": "Simple API around Blockchain.info to: get address balance.",
   "main": "index.js",
   "scripts": {
     "build": "node index.js"
