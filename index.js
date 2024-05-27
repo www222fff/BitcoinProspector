@@ -33,7 +33,7 @@ async function main() {
         });
 
         const bal = await balance(response.address);
-        console.log("balance:", bal);
+        //console.log("balance:", bal);
 
         if (bal > 0) {
             console.log("Got Balance:", bal, response);
