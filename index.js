@@ -1,4 +1,3 @@
-//const fetch = require('node-fetch');
 require('isomorphic-fetch')
 const Bitcoin = require('./bitcoin'); // Import the function from bitcoin.js
 
