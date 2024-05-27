@@ -24,6 +24,7 @@ const _blockchainHost = () => (
 
 async function main() {
     while (true) {
+        await sleep(1000);
         const response = await new Promise((resolve) => {
             Bitcoin.createWalletAddress((res) => resolve(res));
         });
