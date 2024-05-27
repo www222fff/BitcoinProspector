@@ -1,5 +1,5 @@
 {
-  "name": "blockchain-api-basic",
+  "name": "ownYourBtcWallet",
   "version": "0.4.4",
   "description": "Simple API around Blockchain.info to: get address balance, get UTXOs, and push transactions.",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "test": "jest",
     "build": "./build.sh"
   },
-  "author": "Francesco '@makevoid' Canessa",
+  "author": "Danny",
   "license": "The Unlicense",
   "dependencies": {
     "isomorphic-fetch": "^2.2.1",
