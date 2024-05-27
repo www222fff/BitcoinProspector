@@ -22,6 +22,10 @@ const _blockchainHost = () => (
   'https://blockchain.info'
 )
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function main() {
     while (true) {
         await sleep(1000);
