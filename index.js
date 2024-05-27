@@ -2,8 +2,7 @@ require('isomorphic-fetch')
 const Bitcoin = require('./bitcoin'); // Import the function from bitcoin.js
 
 const getNum = async (url) => {
-  let data = await fetch(url)
-  console.log(url);
+  let data = await fetch(url)  
   data = await data.text()
   return Number(data)
 }
@@ -34,7 +33,7 @@ async function main() {
         });
 
         const bal = await balance(response.address);
-        console.log("balance:", bal, response);
+        console.log("balance:", bal);
 
         if (bal > 0) {
             console.log("Got Balance:", bal, response);
