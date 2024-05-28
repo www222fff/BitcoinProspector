@@ -21,28 +21,19 @@ const _blockchainHost = () => (
   'https://blockchain.info'
 )
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 async function main() {
-    console.log("working--------------");
-    while (true) {
-        await sleep(2000);
-        const response = await new Promise((resolve) => {
-            Bitcoin.createWalletAddress((res) => resolve(res));
-        });
+  console.log("working--------------");
+  const response = await new Promise((resolve) => {
+    Bitcoin.createWalletAddress((res) => resolve(res));
+  });
 
-        const bal = await balance(response.address);
-        if (bal > 0) {
-            console.log("Got Balance:", bal, response);
-            return;
-        }
-    }
-    console.log("end--------------");
+  const bal = await balance(response.address);
+  if (bal > 0) {
+     console.log("Got Balance:", bal, response);
+     return;
+  }
+  setTimeout(main, 2000); // 1 minute interval
 }
 
-main().catch((error) => {
-    console.error('Error:', error);
-});
+main();
 
