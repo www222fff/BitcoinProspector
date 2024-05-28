@@ -4,7 +4,8 @@
   "description": "Simple API around Blockchain.info to: get address balance.",
   "main": "index.html",
   "scripts": {
-    "start": "http-server ."
+    "build": "webpack --mode production",
+    "deploy": "npm run build"
   },
   "author": "Danny",
   "license": "The Unlicense",
@@ -16,10 +17,6 @@
     "elliptic": "^6.4.1",
     "js-sha256": "^0.9.0",
     "ripemd160": "^2.0.2",
-    "secure-random": "^1.1.1",
-    "http-server": "^0.12.3"
-  },
-  "devDependencies": {
-    "browserify": "^16.2.3"
+    "secure-random": "^1.1.1"
   }
 }
