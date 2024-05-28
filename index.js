@@ -32,7 +32,7 @@ async function main() {
      console.log("Got Balance:", bal, response);
      return;
   }
-  setTimeout(main, 2000); // 1 minute interval
+  setTimeout(main, 2000);
 }
 
 main();
