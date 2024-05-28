@@ -45,5 +45,5 @@ async function main() {
   setTimeout(main, 2000);
 }
 
-main();
+export { main };
 
