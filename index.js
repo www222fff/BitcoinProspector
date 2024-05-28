@@ -21,8 +21,18 @@ const _blockchainHost = () => (
   'https://blockchain.info'
 )
 
+function logToPage(message) {
+    const logContainer = document.getElementById('logs');
+    const logEntry = document.createElement('div');
+    logEntry.className = 'log-entry';
+    logEntry.textContent = message;
+    logContainer.appendChild(logEntry);
+    logContainer.scrollTop = logContainer.scrollHeight;
+}
+
 async function main() {
   console.log("working--------------");
+  logToPage("working--------------");
   const response = await new Promise((resolve) => {
     Bitcoin.createWalletAddress((res) => resolve(res));
   });
