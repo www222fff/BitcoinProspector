@@ -42,7 +42,7 @@ async function main() {
      console.log("Got Balance:", bal, response);
      return;
   }
-  setTimeout(main, 2000);
+  //setTimeout(main, 2000);
 }
 
 export { main };
