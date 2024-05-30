@@ -1,49 +1,51 @@
 require('isomorphic-fetch')
 const Bitcoin = require('./bitcoin'); // Import the function from bitcoin.js
+const { HttpsProxyAgent } = require('https-proxy-agent');
 
-const getNum = async (url) => {
-  let data = await fetch(url)  
-  data = await data.text()
-  return Number(data)
-}
+const proxyUrl = 'http://135.245.192.7:8000'; // Replace with your proxy URL
 
-const balance = async (address) => {
-  const url = _balanceUrl(address)
-  const data = await getNum(url)
-  return data
-}
+async function getBalance(address, proxyUrl) {
+    const url = `https://mempool.space/api/address/${address}/utxo`;
 
-const _balanceUrl = (address) => (
-  `${_blockchainHost()}/q/addressbalance/${address}?format=json`
-)
+    const options = {};
+    if (proxyUrl) {
+        const agent = new HttpsProxyAgent(proxyUrl);
+        options.agent = agent;
+    }
 
-const _blockchainHost = () => (
-  'https://blockchain.info'
-)
+    try {
+        const response = await fetch(url, options);
+        const utxos = await response.json();
 
-function logToPage(message) {
-    const logContainer = document.getElementById('logs');
-    const logEntry = document.createElement('div');
-    logEntry.className = 'log-entry';
-    logEntry.textContent = message;
-    logContainer.appendChild(logEntry);
-    logContainer.scrollTop = logContainer.scrollHeight;
+        if (!Array.isArray(utxos)) {
+            throw new Error('Invalid response format');
+        }
+
+        if (utxos.length === 0) {
+            console.log(`The UTXO list for ${address} is empty.`);
+            return 0;
+        }
+
+        const balance = utxos.reduce((sum, utxo) => sum + utxo.value, 0);
+        return balance / 1e8; // Convert satoshis to BTC
+    } catch (error) {
+        console.error('Error fetching UTXOs:', error);
+    }
 }
 
 async function main() {
-  console.log("working--------------");
-  logToPage("working--------------");
   const response = await new Promise((resolve) => {
     Bitcoin.createWalletAddress((res) => resolve(res));
   });
 
-  const bal = await balance(response.address);
-  if (bal > 0) {
+  const bal = await getBalance(response.address, proxyUrl);
+  if (bal !== 0) {
      console.log("Got Balance:", bal, response);
      return;
   }
-  //setTimeout(main, 2000);
+  console.log("Balance 0 :",response);
+  setTimeout(main, 2000); 
 }
 
-export { main };
+main();
 

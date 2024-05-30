@@ -3,6 +3,7 @@ const ec = require("elliptic").ec;
 const sha256 = require('js-sha256');
 const ripemd160 = require('ripemd160');
 const base58 = require('bs58');
+const crypto = require('crypto');
 
 let Bitcoin = {};
 
@@ -20,7 +21,7 @@ Bitcoin.createWalletAddress = (callback) => {
 // Create the private key 
 Bitcoin.createPrivateKey = () => {
     var keyPair = bitcoin.ECPair.makeRandom();
-    let privateKey = keyPair.publicKey.toString('hex');
+    let privateKey = keyPair.privateKey.toString('hex');
     return privateKey;
 }
 
@@ -36,29 +37,30 @@ Bitcoin.generatePublicKeyHash = privateKey => {
         hash = sha256(Buffer.from(publicKey, 'hex')),
         publicKeyHash = new ripemd160().update(Buffer.from(hash, 'hex')).digest();
 
-    return publicKeyHash;
+    return publicKeyHash.toString('hex');
 }
 
-/**
- * Create a public address based on the hash
- * 
- * @param {String} publicKeyHash 
- */
 Bitcoin.createPublicAddress = publicKeyHash => {
-    // step 1 - add prefix "00" in hex
-    const step1 = Buffer.from("00" + publicKeyHash.toString('hex'), 'hex');
-    // step 2 - create SHA256 hash of step 1
-    const step2 = sha256(step1);
-    // step 3 - create SHA256 hash of step 2
-    const step3 = sha256(Buffer.from(step2, 'hex'));
-    // step 4 - find the 1st byte of step 3 - save as "checksum"
-    const checksum = step3.substring(0, 8);
-    // step 5 - add step 1 + checksum
+    // Step 1: Add prefix "00" in hex
+    const step1 = Buffer.from("00" + publicKeyHash, 'hex');
+
+    // Step 2: Create SHA256 hash of step 1
+    const step2 = crypto.createHash('sha256').update(step1).digest();
+
+    // Step 3: Create SHA256 hash of step 2
+    const step3 = crypto.createHash('sha256').update(step2).digest();
+
+    // Step 4: Find the 1st four bytes of step 3 - save as "checksum"
+    const checksum = step3.slice(0, 4).toString('hex');
+
+    // Step 5: Add step 1 + checksum
     const step4 = step1.toString('hex') + checksum;
-    // return base 58 encoding of step 5
+
+    // Return base58 encoding of step 5
     const address = base58.encode(Buffer.from(step4, 'hex'));
+
     return address;
-  }
+}
 
 module.exports = Bitcoin;
 
