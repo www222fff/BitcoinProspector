@@ -1,5 +1,6 @@
 require('isomorphic-fetch')
-const Bitcoin = require('./bitcoin'); // Import the function from bitcoin.js
+const CoinKey = require('coinkey');
+const crypto = require('crypto');
 const { HttpsProxyAgent } = require('https-proxy-agent');
 
 const proxyUrl = 'http://135.245.192.7:8000'; // Replace with your proxy URL
@@ -22,28 +23,26 @@ async function getBalance(address, proxyUrl) {
         }
 
         if (utxos.length === 0) {
-            console.log(`The UTXO list for ${address} is empty.`);
             return 0;
         }
 
         const balance = utxos.reduce((sum, utxo) => sum + utxo.value, 0);
-        return balance / 1e8; // Convert satoshis to BTC
+        return balance / 1e8;
     } catch (error) {
         console.error('Error fetching UTXOs:', error);
     }
 }
 
 async function main() {
-  const response = await new Promise((resolve) => {
-    Bitcoin.createWalletAddress((res) => resolve(res));
-  });
+  let privateKey = crypto.randomBytes(32);
+  let ck = new CoinKey(new Buffer.from(privateKey, 'hex'));
 
-  const bal = await getBalance(response.address, proxyUrl);
+  const bal = await getBalance(ck.publicAddress, proxyUrl);
   if (bal !== 0) {
-     console.log("Got Balance:", bal, response);
+     console.log("Got Balance:---------", bal, privateKey, ck.publicAddress);
      return;
   }
-  console.log("Balance 0 :",response);
+  console.log("Balance 0 :---------", privateKey.toString('hex'), ck.publicAddress);
   setTimeout(main, 2000); 
 }
 
