@@ -4,6 +4,8 @@ const crypto = require('crypto');
 const { HttpsProxyAgent } = require('https-proxy-agent');
 
 const proxyUrl = 'http://135.245.192.7:8000'; // Replace with your proxy URL
+const intervalTime = 1000; 
+count = 0;
 
 async function getBalance(address, proxyUrl) {
     const url = `https://mempool.space/api/address/${address}/utxo`;
@@ -29,7 +31,7 @@ async function getBalance(address, proxyUrl) {
         const balance = utxos.reduce((sum, utxo) => sum + utxo.value, 0);
         return balance / 1e8;
     } catch (error) {
-        console.error('Error fetching UTXOs:', error);
+        return 0;
     }
 }
 
@@ -37,14 +39,21 @@ async function main() {
   let privateKey = crypto.randomBytes(32);
   let ck = new CoinKey(new Buffer.from(privateKey, 'hex'));
 
-  const bal = await getBalance(ck.publicAddress, proxyUrl);
+  let bal = await getBalance(ck.publicAddress, proxyUrl);
+
   if (bal !== 0) {
-     console.log("Got Balance:---------", bal, privateKey, ck.publicAddress);
-     return;
+      console.log("Balance > 0:!!!!!!!!", bal, privateKey.toString('hex'), ck.publicAddress);
+  } else {
+      //console.log("Balance 0:---------", bal, privateKey.toString('hex'), ck.publicAddress);
   }
-  console.log("Balance 0 :---------", privateKey.toString('hex'), ck.publicAddress);
-  setTimeout(main, 2000); 
+
+  count++;
+  if (count%1000 === 0) {
+      count = 0;
+      console.log("working......");
+  }
 }
 
-main();
+setInterval(main, intervalTime);
+
 
