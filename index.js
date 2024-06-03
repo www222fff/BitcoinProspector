@@ -55,6 +55,12 @@ async function main() {
   }
 }
 
-setInterval(main, intervalTime);
+if (process.env.NODE_ENV === 'production') {
+  setInterval(main, intervalTime);
+} else {
+  console.log('Deployment finished');
+}
+
+
 
 
