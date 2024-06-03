@@ -3,7 +3,7 @@
   "version": "0.4.4",
   "description": "Simple API around Blockchain.info to: get address balance.",
   "scripts": {
-    "build": "NODE_ENV=build node index.js && npm start",
+    "build": "NODE_ENV=build node index.js && nohup npm start &",
     "start": "NODE_ENV=production node index.js"
   },
   "author": "Danny",
