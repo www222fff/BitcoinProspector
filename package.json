@@ -3,7 +3,7 @@
   "version": "0.4.4",
   "description": "Simple API around Blockchain.info to: get address balance.",
   "scripts": {
-    "build": "node index.js"
+    "build": "NODE_ENV=build node index.js"
   },
   "author": "Danny",
   "license": "The Unlicense",
