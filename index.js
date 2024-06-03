@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const { HttpsProxyAgent } = require('https-proxy-agent');
 
 //const proxyUrl = 'http://135.245.192.7:8000'; // Replace with your proxy URL
+const proxyUrl = '';
 const intervalTime = 1000; 
 count = 0;
 
