@@ -87,13 +87,13 @@ async def deploy(teepod_id: int, image: str) -> Dict[str, Any]:
 services:
   eliza:
     image: ghcr.io/${DOCKER_REGISTRY_USERNAME_KEY}/check_eth:latest
-    container_name: check_eth
+    container_name: check_btc
     command:
       - /bin/sh
       - -c
       - |
         cd /app
-        python farmer.py
+        node index.js
     ports:
       - "3000:3000"
     volumes:
