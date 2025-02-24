@@ -101,8 +101,6 @@ services:
       - tee:/app/db.sqlite
     environment:
       - TEE_MODE=PRODUCTION
-      - BOT_TOKEN=${BOT_TOKEN_KEY}
-      - CHANNEL_ID=${CHANNEL_ID_KEY}
     restart: always
 volumes:
     tee:"""
@@ -134,14 +132,6 @@ volumes:
     }
 
     encrypted_envs = [
-        {
-            "key": "BOT_TOKEN_KEY",
-            "value": os.getenv("BOT_TOKEN"),
-        },
-        {
-            "key": "CHANNEL_ID_KEY",
-            "value": os.getenv("CHANNEL_ID"),
-        },
         {
             "key": "DOCKER_REGISTRY_USERNAME_KEY",
             "value": os.getenv("DOCKER_REGISTRY_USERNAME"),
