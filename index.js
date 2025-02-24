@@ -3,28 +3,18 @@ const crypto = require('crypto');
 const tinysecp = require('tiny-secp256k1');
 const { ECPairFactory } = require('ecpair');
 const bitcoin = require('bitcoinjs-lib');
-const { HttpsProxyAgent } = require('https-proxy-agent');
-
 
 bitcoin.initEccLib(tinysecp);
 
 const NETWORK = bitcoin.networks.bitcoin;
 const ECPair = ECPairFactory(tinysecp);
 
-const proxyUrl = 'http://135.245.192.7:8000'; // Replace with your proxy URL
 count = 0;
-
-async function getBalance(address, proxyUrl) {
+async function getBalance(address) {
     const url = `https://mempool.space/api/address/${address}/utxo`;
 
-    const options = {};
-    if (proxyUrl) {
-        const agent = new HttpsProxyAgent(proxyUrl);
-        options.agent = agent;
-    }
-
     try {
-        const response = await fetch(url, options);
+        const response = await fetch(url);
         const utxos = await response.json();
 
         if (!Array.isArray(utxos)) {
@@ -53,21 +43,21 @@ async function main() {
 	const { address: address_p2wpkh } = bitcoin.payments.p2wpkh({ pubkey: Buffer.from(keyPair.publicKey), network: NETWORK });
 	const { address: address_p2tr } = bitcoin.payments.p2tr({ internalPubkey: xOnlyPubKey, network: NETWORK });
 
-        let val_p2pkh = await getBalance(address_p2pkh, proxyUrl);
+        let val_p2pkh = await getBalance(address_p2pkh);
         if (val_p2pkh !== 0) {
             console.log("Balance > 0:!!!!!!!!", val_p2pkh, privateKey.toString('hex'), address_p2pkh);
         } else {
             console.log("Balance 0:---------", val_p2pkh, privateKey.toString('hex'), address_p2pkh);
         }
 
-        let val_p2wpkh = await getBalance(address_p2wpkh, proxyUrl);
+        let val_p2wpkh = await getBalance(address_p2wpkh);
         if (val_p2wpkh !== 0) {
             console.log("Balance > 0:!!!!!!!!", val_p2wpkh, privateKey.toString('hex'), address_p2wpkh);
         } else {
             console.log("Balance 0:---------", val_p2wpkh, privateKey.toString('hex'), address_p2wpkh);
         }
 
-        let val_p2tr = await getBalance(address_p2tr, proxyUrl);
+        let val_p2tr = await getBalance(address_p2tr);
         if (val_p2tr !== 0) {
             console.log("Balance > 0:!!!!!!!!", val_p2tr, privateKey.toString('hex'), address_p2tr);
         } else {
