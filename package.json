@@ -1,17 +1,19 @@
 {
-  "name": "ownYourBtcWallet",
+  "name": "checkBtc",
   "version": "0.4.4",
   "description": "Simple API around Blockchain.info to: get address balance.",
   "scripts": {
-    "build": "NODE_ENV=build node index.js && npm start > dw.log&",
-    "start": "NODE_ENV=production node index.js"
+    "build": "npm start",
+    "start": "node index.js"
   },
-  "author": "Danny",
+  "author": "",
   "license": "The Unlicense",
   "dependencies": {
-    "coinkey": "^3.0.0",
+    "bitcoinjs-lib": "^6.1.5",
+    "ecpair": "^3.0.0-rc.0",
     "https-proxy-agent": "^5.0.0",
     "isomorphic-fetch": "^2.2.1",
-    "secure-random": "^1.1.1"
+    "secure-random": "^1.1.1",
+    "tiny-secp256k1": "^2.2.3"
   }
 }

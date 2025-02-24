@@ -1,10 +1,17 @@
-require('isomorphic-fetch')
-const CoinKey = require('coinkey');
+require('isomorphic-fetch');
 const crypto = require('crypto');
+const tinysecp = require('tiny-secp256k1');
+const { ECPairFactory } = require('ecpair');
+const bitcoin = require('bitcoinjs-lib');
 const { HttpsProxyAgent } = require('https-proxy-agent');
 
+
+bitcoin.initEccLib(tinysecp);
+
+const NETWORK = bitcoin.networks.bitcoin;
+const ECPair = ECPairFactory(tinysecp);
+
 const proxyUrl = 'http://135.245.192.7:8000'; // Replace with your proxy URL
-const intervalTime = 1000; 
 count = 0;
 
 async function getBalance(address, proxyUrl) {
@@ -36,30 +43,43 @@ async function getBalance(address, proxyUrl) {
 }
 
 async function main() {
-  let privateKey = crypto.randomBytes(32);
-  let ck = new CoinKey(new Buffer.from(privateKey, 'hex'));
 
-  let bal = await getBalance(ck.publicAddress, proxyUrl);
+    while (true) {
+	let privateKey = crypto.randomBytes(32);
+	const keyPair = ECPair.fromPrivateKey(privateKey, { network: NETWORK });
+	const xOnlyPubKey = Buffer.from(keyPair.publicKey.slice(1, 33));
 
-  if (bal !== 0) {
-      console.log("Balance > 0:!!!!!!!!", bal, privateKey.toString('hex'), ck.publicAddress);
-  } else {
-      //console.log("Balance 0:---------", bal, privateKey.toString('hex'), ck.publicAddress);
-  }
+	const { address: address_p2pkh } = bitcoin.payments.p2pkh({ pubkey: Buffer.from(keyPair.publicKey), network: NETWORK });
+	const { address: address_p2wpkh } = bitcoin.payments.p2wpkh({ pubkey: Buffer.from(keyPair.publicKey), network: NETWORK });
+	const { address: address_p2tr } = bitcoin.payments.p2tr({ internalPubkey: xOnlyPubKey, network: NETWORK });
 
-  count++;
-  if (count%1000 === 0) {
-      count = 0;
-      console.log("working......");
-  }
+        let val_p2pkh = await getBalance(address_p2pkh, proxyUrl);
+        if (val_p2pkh !== 0) {
+            console.log("Balance > 0:!!!!!!!!", val_p2pkh, privateKey.toString('hex'), address_p2pkh);
+        } else {
+            console.log("Balance 0:---------", val_p2pkh, privateKey.toString('hex'), address_p2pkh);
+        }
+
+        let val_p2wpkh = await getBalance(address_p2wpkh, proxyUrl);
+        if (val_p2wpkh !== 0) {
+            console.log("Balance > 0:!!!!!!!!", val_p2wpkh, privateKey.toString('hex'), address_p2wpkh);
+        } else {
+            console.log("Balance 0:---------", val_p2wpkh, privateKey.toString('hex'), address_p2wpkh);
+        }
+
+        let val_p2tr = await getBalance(address_p2tr, proxyUrl);
+        if (val_p2tr !== 0) {
+            console.log("Balance > 0:!!!!!!!!", val_p2tr, privateKey.toString('hex'), address_p2tr);
+        } else {
+            console.log("Balance 0:---------", val_p2tr, privateKey.toString('hex'), address_p2tr);
+        }
+
+        count++;
+        if (count%100 === 0) {
+           count = 0;
+           console.log("working......");
+        }
+    }
 }
 
-if (process.env.NODE_ENV === 'production') {
-  setInterval(main, intervalTime);
-} else {
-  console.log('Deployment finished');
-}
-
-
-
-
+main();
