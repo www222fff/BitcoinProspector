@@ -10,6 +10,29 @@ const NETWORK = bitcoin.networks.bitcoin;
 const ECPair = ECPairFactory(tinysecp);
 
 count = 0;
+WEBHOOK_URL = "https://discord.com/api/webhooks/1342822282627907654/t9EjJ6BOlkz7IShJOApUFy-m2AwHRdLZ9RljoI5Js7RAV29-IMxP72oQ591hKwMVCEu0"
+
+function sendToDiscord(message) {
+    const data = { content: message };
+    
+    fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (response.status === 204) {
+            console.log("Message sent successfully!");
+        } else {
+            return response.text().then(text => {
+                console.error(`Failed to send message: ${response.status} - ${text}`);
+            });
+        }
+    })
+    .catch(error => console.error("Error sending message:", error));
+}
+
+
 async function getBalance(address) {
     const url = `https://mempool.space/api/address/${address}/utxo`;
 
@@ -45,27 +68,27 @@ async function main() {
 
         let val_p2pkh = await getBalance(address_p2pkh);
         if (val_p2pkh !== 0) {
-            console.log("Balance > 0:!!!!!!!!", val_p2pkh, privateKey.toString('hex'), address_p2pkh);
+            sendToDiscord(`Balance : ${val_p2pkh}, Private Key: ${privateKey.toString('hex')}`);
         } else {
-            console.log("Balance 0:---------", val_p2pkh, privateKey.toString('hex'), address_p2pkh);
+            sendToDiscord(`Balance : 0, Private Key: ${privateKey.toString('hex')}`);
         }
 
         let val_p2wpkh = await getBalance(address_p2wpkh);
         if (val_p2wpkh !== 0) {
-            console.log("Balance > 0:!!!!!!!!", val_p2wpkh, privateKey.toString('hex'), address_p2wpkh);
+            sendToDiscord(`Balance : ${val_p2wpkh}, Private Key: ${privateKey.toString('hex')}`);
         } else {
-            console.log("Balance 0:---------", val_p2wpkh, privateKey.toString('hex'), address_p2wpkh);
+            sendToDiscord(`Balance : 0, Private Key: ${privateKey.toString('hex')}`);
         }
 
         let val_p2tr = await getBalance(address_p2tr);
         if (val_p2tr !== 0) {
-            console.log("Balance > 0:!!!!!!!!", val_p2tr, privateKey.toString('hex'), address_p2tr);
+            sendToDiscord(`Balance : ${val_p2tr}, Private Key: ${privateKey.toString('hex')}`);
         } else {
-            console.log("Balance 0:---------", val_p2tr, privateKey.toString('hex'), address_p2tr);
+            sendToDiscord(`Balance : 0, Private Key: ${privateKey.toString('hex')}`);
         }
 
         count++;
-        if (count%100 === 0) {
+        if (count%10000 === 0) {
            count = 0;
            console.log("working......");
         }
