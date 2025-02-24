@@ -83,9 +83,9 @@ async function main() {
         }
 
         count++;
-        if (count%100 === 0) {
-           count = 0;
+        if (count%1000 === 0) {
            sendToDiscord(`check BTC tried ${count} times`);
+           count = 0;
         }
     }
 }
