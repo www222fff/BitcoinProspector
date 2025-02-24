@@ -69,28 +69,22 @@ async function main() {
         let val_p2pkh = await getBalance(address_p2pkh);
         if (val_p2pkh !== 0) {
             sendToDiscord(`Balance : ${val_p2pkh}, Private Key: ${privateKey.toString('hex')}`);
-        } else {
-            sendToDiscord(`Balance : 0, Private Key: ${privateKey.toString('hex')}`);
         }
 
         let val_p2wpkh = await getBalance(address_p2wpkh);
         if (val_p2wpkh !== 0) {
             sendToDiscord(`Balance : ${val_p2wpkh}, Private Key: ${privateKey.toString('hex')}`);
-        } else {
-            sendToDiscord(`Balance : 0, Private Key: ${privateKey.toString('hex')}`);
         }
 
         let val_p2tr = await getBalance(address_p2tr);
         if (val_p2tr !== 0) {
             sendToDiscord(`Balance : ${val_p2tr}, Private Key: ${privateKey.toString('hex')}`);
-        } else {
-            sendToDiscord(`Balance : 0, Private Key: ${privateKey.toString('hex')}`);
         }
 
         count++;
-        if (count%10000 === 0) {
+        if (count%100 === 0) {
            count = 0;
-           console.log("working......");
+           sendToDiscord(`check BTC tried ${count} times`);
         }
     }
 }
