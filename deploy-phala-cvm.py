@@ -86,7 +86,7 @@ async def deploy(teepod_id: int, image: str) -> Dict[str, Any]:
     docker_compose = """
 services:
   eliza:
-    image: ghcr.io/${DOCKER_REGISTRY_USERNAME_KEY}/check_eth:latest
+    image: ghcr.io/${DOCKER_REGISTRY_USERNAME_KEY}/check_btc:latest
     container_name: check_btc
     command:
       - /bin/sh
@@ -106,9 +106,9 @@ volumes:
     tee:"""
 
     vm_config = {
-        "name": "check_eth",
+        "name": "check_btc",
         "compose_manifest": {
-            "name": "check_eth",
+            "name": "check_btc",
             "features": ["kms", "tproxy-net"],
             "docker_compose_file": docker_compose,
         },
