@@ -22,7 +22,7 @@ function sendToDiscord(message) {
     })
     .then(response => {
         if (response.status === 204) {
-            console.log("Message sent successfully!");
+            //console.log("Message sent successfully!");
         } else {
             return response.text().then(text => {
                 console.error(`Failed to send message: ${response.status} - ${text}`);
@@ -57,6 +57,7 @@ async function getBalance(address) {
 
 async function main() {
 
+    console.log("start..");
     while (true) {
 	let privateKey = crypto.randomBytes(32);
 	const keyPair = ECPair.fromPrivateKey(privateKey, { network: NETWORK });
