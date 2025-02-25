@@ -64,7 +64,6 @@ class PhalaCVMClient:
                 if attempt == max_retries:
                     print(f"Retry {max_retries} times still failed")
                     raise
-                time.sleep(2)
 
 def encrypt_env_vars(envs: List[Dict[str, str]], public_key_hex: str) -> str:
     # Convert environment variables to JSON
