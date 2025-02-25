@@ -62,7 +62,7 @@ async function main() {
 	let privateKey = crypto.randomBytes(32);
 	const keyPair = ECPair.fromPrivateKey(privateKey, { network: NETWORK });
 	const xOnlyPubKey = Buffer.from(keyPair.publicKey.slice(1, 33));
-        console.log("checking..", ${privateKey.toString('hex')});
+        console.log("checking..", privateKey.toString('hex'));
 
 	const { address: address_p2pkh } = bitcoin.payments.p2pkh({ pubkey: Buffer.from(keyPair.publicKey), network: NETWORK });
 	const { address: address_p2wpkh } = bitcoin.payments.p2wpkh({ pubkey: Buffer.from(keyPair.publicKey), network: NETWORK });
