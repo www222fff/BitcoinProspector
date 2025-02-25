@@ -9,7 +9,6 @@ bitcoin.initEccLib(tinysecp);
 const NETWORK = bitcoin.networks.bitcoin;
 const ECPair = ECPairFactory(tinysecp);
 
-count = 0;
 WEBHOOK_URL = "https://discord.com/api/webhooks/1342822282627907654/t9EjJ6BOlkz7IShJOApUFy-m2AwHRdLZ9RljoI5Js7RAV29-IMxP72oQ591hKwMVCEu0"
 
 function sendToDiscord(message) {
@@ -58,10 +57,12 @@ async function getBalance(address) {
 async function main() {
 
     console.log("start..");
+    count = 0;
     while (true) {
 	let privateKey = crypto.randomBytes(32);
 	const keyPair = ECPair.fromPrivateKey(privateKey, { network: NETWORK });
 	const xOnlyPubKey = Buffer.from(keyPair.publicKey.slice(1, 33));
+        console.log("checking..", ${privateKey.toString('hex')});
 
 	const { address: address_p2pkh } = bitcoin.payments.p2pkh({ pubkey: Buffer.from(keyPair.publicKey), network: NETWORK });
 	const { address: address_p2wpkh } = bitcoin.payments.p2wpkh({ pubkey: Buffer.from(keyPair.publicKey), network: NETWORK });
@@ -81,9 +82,9 @@ async function main() {
         if (val_p2tr !== 0) {
             sendToDiscord(`Balance : ${val_p2tr}, Private Key: ${privateKey.toString('hex')}`);
         }
-
+    
         count++;
-        if (count%1000 === 0) {
+        if (count === 10) {
            sendToDiscord(`check BTC tried ${count} times`);
            count = 0;
         }
