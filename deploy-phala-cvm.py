@@ -50,11 +50,6 @@ class PhalaCVMClient:
         return None
 
     def update_vm(self, identifier: str, compose_manifest: Dict[str, Any]) -> Dict[str, Any]:
-        response = self.client.put(f"/cvms/{identifier}/compose", json=compose_manifest)
-        response.raise_for_status()
-        return response.json()
-
-    def update_vm(self, identifier: str, compose_manifest: Dict[str, Any]) -> Dict[str, Any]:
         max_retries = 3
         for attempt in range(max_retries + 1):
             try:
@@ -65,11 +60,10 @@ class PhalaCVMClient:
                 )
                 response.raise_for_status()
                 return response.json()
-            except (requests.Timeout, requests.ConnectionError) as e:
-                print(f"Attempt {attempt + 1}: Request failed due to {e}")
+            except:
                 if attempt == max_retries:
-                    raise
                     print(f"Retry {max_retries} times still failed")
+                    raise
                 time.sleep(2)
 
 def encrypt_env_vars(envs: List[Dict[str, str]], public_key_hex: str) -> str:
