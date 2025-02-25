@@ -54,6 +54,24 @@ class PhalaCVMClient:
         response.raise_for_status()
         return response.json()
 
+    def update_vm(self, identifier: str, compose_manifest: Dict[str, Any]) -> Dict[str, Any]:
+        max_retries = 3
+        for attempt in range(max_retries + 1):
+            try:
+                response = self.client.put(
+                    f"/cvms/{identifier}/compose",
+                    json=compose_manifest,
+                    timeout=10
+                )
+                response.raise_for_status()
+                return response.json()
+            except (requests.Timeout, requests.ConnectionError) as e:
+                print(f"Attempt {attempt + 1}: Request failed due to {e}")
+                if attempt == max_retries:
+                    raise
+                    print(f"Retry {max_retries} times still failed")
+                time.sleep(2)
+
 def encrypt_env_vars(envs: List[Dict[str, str]], public_key_hex: str) -> str:
     # Convert environment variables to JSON
     envs_json = json.dumps({"env": envs})
@@ -87,6 +105,7 @@ async def deploy(teepod_id: int, image: str) -> Dict[str, Any]:
 services:
   eliza:
     image: ghcr.io/${DOCKER_REGISTRY_USERNAME_KEY}/check_btc:latest
+    pull_policy: always
     container_name: check_btc
     command:
       - /bin/sh
