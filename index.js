@@ -47,7 +47,8 @@ async function getBalance(address) {
         if (!Array.isArray(utxos)) {
             throw new Error('Invalid response format');
         }
-	    
+	
+	console.error(`Success get UTXO for ${address}:`, utxos);
 	return utxos.length;
     } catch (error) {
 	console.error(`Error checking UTXO for ${address}:`, error);
