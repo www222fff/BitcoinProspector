@@ -57,7 +57,7 @@ async function getBalance(address) {
 }
 
 async function main() {
-    //do not use parrel mode as rate limit for mempool.space
+    //Note: Not use parrel mode to avoid rate limit
     console.log("start..");
     count = 0;
     while (true) {
@@ -86,7 +86,7 @@ async function main() {
         }
     
         count++;
-        if (count === 1000) {
+        if (count === 10000) {
            sendToDiscord(`BTC scan attempt: ${count}`);
            count = 0;
         }
