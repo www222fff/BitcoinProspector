@@ -35,7 +35,7 @@ async function sendToDiscord(message) {
 }
 
 async function getBalance(address) {
-    const url = `https://mempool.space/api/address/${address}/utxo`;
+    const url = `https://blockstream.info/api/address/${address}/utxo`;
 
     try {
         const response = await fetch(url);
