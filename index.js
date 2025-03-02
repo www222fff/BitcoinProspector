@@ -57,35 +57,39 @@ async function getBalance(address) {
 }
 
 async function main() {
-    console.log("Start ...");
-    let count = 0;
 
+    console.log("start..");
+    count = 0;
     while (true) {
-        let privateKey = crypto.randomBytes(32);
-        const keyPair = ECPair.fromPrivateKey(privateKey, { network: NETWORK });
-        const xOnlyPubKey = Buffer.from(keyPair.publicKey.slice(1, 33));
+	let privateKey = crypto.randomBytes(32);
+	const keyPair = ECPair.fromPrivateKey(privateKey, { network: NETWORK });
+	const xOnlyPubKey = Buffer.from(keyPair.publicKey.slice(1, 33));
+        //console.log("DEBUG checking..", privateKey.toString('hex'));
 
 	const { address: address_p2pkh } = bitcoin.payments.p2pkh({ pubkey: Buffer.from(keyPair.publicKey), network: NETWORK });
 	const { address: address_p2wpkh } = bitcoin.payments.p2wpkh({ pubkey: Buffer.from(keyPair.publicKey), network: NETWORK });
 	const { address: address_p2tr } = bitcoin.payments.p2tr({ internalPubkey: xOnlyPubKey, network: NETWORK });
 
-        const balances = await Promise.all([
-            getBalance(address_p2pkh),
-            getBalance(address_p2wpkh),
-            getBalance(address_p2tr),
-        ]);
-
-        const privateKeyHex = privateKey.toString('hex');
-        if (balances[0] !== 0) sendToDiscord(`Balance: ${balances[0]}, Private Key: ${privateKeyHex}`);
-        if (balances[1] !== 0) sendToDiscord(`Balance: ${balances[1]}, Private Key: ${privateKeyHex}`);
-        if (balances[2] !== 0) sendToDiscord(`Balance: ${balances[2]}, Private Key: ${privateKeyHex}`);
-
-        count++;
-        if (count % 100 === 0) {
-            sendToDiscord(`BTC scan attempt: ${count}`);
+        let val_p2pkh = await getBalance(address_p2pkh);
+        if (val_p2pkh !== 0) {
+            sendToDiscord(`Balance : ${val_p2pkh}, Private Key: ${privateKey.toString('hex')}`);
         }
-	    
-        await new Promise(r => setTimeout(r, 10));
+
+        let val_p2wpkh = await getBalance(address_p2wpkh);
+        if (val_p2wpkh !== 0) {
+            sendToDiscord(`Balance : ${val_p2wpkh}, Private Key: ${privateKey.toString('hex')}`);
+        }
+
+        let val_p2tr = await getBalance(address_p2tr);
+        if (val_p2tr !== 0) {
+            sendToDiscord(`Balance : ${val_p2tr}, Private Key: ${privateKey.toString('hex')}`);
+        }
+    
+        count++;
+        if (count === 1000) {
+           sendToDiscord(`BTC tried ${count} times`);
+           count = 0;
+        }
     }
 }
 
