@@ -35,7 +35,7 @@ async function sendToDiscord(message) {
 }
 
 async function getBalance(address) {
-    const url = `https://blockstream.info/api/address/${address}/utxo`;
+    const url = `https://mempool.space/api/address/${address}/utxo`;
 
     try {
         const response = await fetch(url);
@@ -57,7 +57,7 @@ async function getBalance(address) {
 }
 
 async function main() {
-
+    //do not use parrel mode as rate limit for mempool.space
     console.log("start..");
     count = 0;
     while (true) {
@@ -87,7 +87,7 @@ async function main() {
     
         count++;
         if (count === 1000) {
-           sendToDiscord(`BTC tried ${count} times`);
+           sendToDiscord(`BTC scan attempt: ${count}`);
            count = 0;
         }
     }
