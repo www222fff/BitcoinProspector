@@ -11,26 +11,28 @@ const ECPair = ECPairFactory(tinysecp);
 
 WEBHOOK_URL = "https://discord.com/api/webhooks/1342822282627907654/t9EjJ6BOlkz7IShJOApUFy-m2AwHRdLZ9RljoI5Js7RAV29-IMxP72oQ591hKwMVCEu0"
 
-function sendToDiscord(message) {
+async function sendToDiscord(message) {
     const data = { content: message };
-    
-    fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-    })
-    .then(response => {
-        if (response.status === 204) {
-            //console.log("Message sent successfully!");
-        } else {
-            return response.text().then(text => {
-                console.error(`Failed to send message: ${response.status} - ${text}`);
-            });
-        }
-    })
-    .catch(error => console.error("Error sending message:", error));
-}
 
+    for (let i = 0; i < 3; i++) {  
+        try {
+            const response = await fetch(WEBHOOK_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
+
+            if (response.status === 204) {
+                return;
+            } else {
+                console.error(`Failed to send message: ${response.status}`);
+            }
+        } catch (error) {
+            console.error(`Error sending message (attempt ${i + 1}):`, error);
+        }
+        await new Promise(r => setTimeout(r, 1000)); 
+    }
+}
 
 async function getBalance(address) {
     const url = `https://mempool.space/api/address/${address}/utxo`;
@@ -38,57 +40,53 @@ async function getBalance(address) {
     try {
         const response = await fetch(url);
         const utxos = await response.json();
+	if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status}`);
+        }
 
         if (!Array.isArray(utxos)) {
             throw new Error('Invalid response format');
         }
-
-        if (utxos.length === 0) {
-            return 0;
-        }
-
-        const balance = utxos.reduce((sum, utxo) => sum + utxo.value, 0);
-        return balance / 1e8;
+	    
+	return utxos.length;
     } catch (error) {
+	console.error(`Error checking UTXO for ${address}:`, error);
         return 0;
     }
 }
 
 async function main() {
+    console.log("Start ...");
+    let count = 0;
 
-    console.log("start..");
-    count = 0;
     while (true) {
-	let privateKey = crypto.randomBytes(32);
-	const keyPair = ECPair.fromPrivateKey(privateKey, { network: NETWORK });
-	const xOnlyPubKey = Buffer.from(keyPair.publicKey.slice(1, 33));
-        //console.log("DEBUG checking..", privateKey.toString('hex'));
+        let privateKey = crypto.randomBytes(32);
+        const keyPair = ECPair.fromPrivateKey(privateKey, { network: NETWORK });
+        const xOnlyPubKey = Buffer.from(keyPair.publicKey.slice(1, 33));
 
-	const { address: address_p2pkh } = bitcoin.payments.p2pkh({ pubkey: Buffer.from(keyPair.publicKey), network: NETWORK });
-	const { address: address_p2wpkh } = bitcoin.payments.p2wpkh({ pubkey: Buffer.from(keyPair.publicKey), network: NETWORK });
-	const { address: address_p2tr } = bitcoin.payments.p2tr({ internalPubkey: xOnlyPubKey, network: NETWORK });
+        const { address: address_p2pkh } = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network: NETWORK });
+        const { address: address_p2wpkh } = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: NETWORK });
+        const { address: address_p2tr } = bitcoin.payments.p2tr({ internalPubkey: xOnlyPubKey, network: NETWORK });
 
-        let val_p2pkh = await getBalance(address_p2pkh);
-        if (val_p2pkh !== 0) {
-            sendToDiscord(`Balance : ${val_p2pkh}, Private Key: ${privateKey.toString('hex')}`);
-        }
+        const balances = await Promise.all([
+            getBalance(address_p2pkh),
+            getBalance(address_p2wpkh),
+            getBalance(address_p2tr),
+        ]);
 
-        let val_p2wpkh = await getBalance(address_p2wpkh);
-        if (val_p2wpkh !== 0) {
-            sendToDiscord(`Balance : ${val_p2wpkh}, Private Key: ${privateKey.toString('hex')}`);
-        }
+        const privateKeyHex = privateKey.toString('hex');
+        if (balances[0] !== 0) sendToDiscord(`Balance: ${balances[0]}, Private Key: ${privateKeyHex}`);
+        if (balances[1] !== 0) sendToDiscord(`Balance: ${balances[1]}, Private Key: ${privateKeyHex}`);
+        if (balances[2] !== 0) sendToDiscord(`Balance: ${balances[2]}, Private Key: ${privateKeyHex}`);
 
-        let val_p2tr = await getBalance(address_p2tr);
-        if (val_p2tr !== 0) {
-            sendToDiscord(`Balance : ${val_p2tr}, Private Key: ${privateKey.toString('hex')}`);
-        }
-    
         count++;
-        if (count === 1000) {
-           sendToDiscord(`BTC tried ${count} times`);
-           count = 0;
+        if (count % 100 === 0) {
+            sendToDiscord(`BTC scan attempt: ${count}`);
         }
+	    
+        await new Promise(r => setTimeout(r, 10));
     }
 }
+
 
 main();
