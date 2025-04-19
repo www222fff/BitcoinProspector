@@ -83,7 +83,7 @@ async function main() {
         }
     
         count++;
-        if (count === 100000) {
+        if (count === 300000) {
            sendToDiscord(`BTC scan attempt: ${count}`);
            count = 0;
         }
