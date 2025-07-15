@@ -40,55 +40,69 @@ async function getBalance(address) {
     try {
         const response = await fetch(url);
         const utxos = await response.json();
-	if (!response.ok) {
+        if (!response.ok) {
             throw new Error(`HTTP Error: ${response.status}`);
         }
 
         if (!Array.isArray(utxos)) {
             throw new Error('Invalid response format');
         }	
-	return utxos.length;
+        return utxos.length;
     } catch (error) {
-	//console.error(`Error checking UTXO for ${address}:`, error);
+        console.error(`Error checking UTXO for ${address}:`, error);
         return 0;
     }
 }
 
+
+function parseArgs() {
+    const args = process.argv.slice(2);
+    return {
+        debug: args.includes('--debug')
+    };
+}
+
 async function main() {
+    const { debug } = parseArgs();
     //Note: Not use parrel mode to avoid rate limit
     console.log("start..");
     count = 0;
     while (true) {
-	let privateKey = crypto.randomBytes(32);
-	const keyPair = ECPair.fromPrivateKey(privateKey, { network: NETWORK });
-	const xOnlyPubKey = Buffer.from(keyPair.publicKey.slice(1, 33));
-      
-	const { address: address_p2pkh } = bitcoin.payments.p2pkh({ pubkey: Buffer.from(keyPair.publicKey), network: NETWORK });
-	const { address: address_p2wpkh } = bitcoin.payments.p2wpkh({ pubkey: Buffer.from(keyPair.publicKey), network: NETWORK });
-	const { address: address_p2tr } = bitcoin.payments.p2tr({ internalPubkey: xOnlyPubKey, network: NETWORK });
+        let privateKey = crypto.randomBytes(32);
+        const keyPair = ECPair.fromPrivateKey(privateKey, { network: NETWORK });
+        const xOnlyPubKey = Buffer.from(keyPair.publicKey.slice(1, 33));
+
+        const { address: address_p2pkh } = bitcoin.payments.p2pkh({ pubkey: Buffer.from(keyPair.publicKey), network: NETWORK });
+        const { address: address_p2wpkh } = bitcoin.payments.p2wpkh({ pubkey: Buffer.from(keyPair.publicKey), network: NETWORK });
+        const { address: address_p2tr } = bitcoin.payments.p2tr({ internalPubkey: xOnlyPubKey, network: NETWORK });
 
         let val_p2pkh = await getBalance(address_p2pkh);
         if (val_p2pkh !== 0) {
             sendToDiscord(`Balance : ${val_p2pkh}, Private Key: ${privateKey.toString('hex')}`);
+        } else {
+            if (debug) console.log("No balance found for P2PKH address:", address_p2pkh);
         }
 
         let val_p2wpkh = await getBalance(address_p2wpkh);
         if (val_p2wpkh !== 0) {
             sendToDiscord(`Balance : ${val_p2wpkh}, Private Key: ${privateKey.toString('hex')}`);
+        } else {
+            if (debug) console.log("No balance found for P2WPKH address:", address_p2wpkh);
         }
 
         let val_p2tr = await getBalance(address_p2tr);
         if (val_p2tr !== 0) {
             sendToDiscord(`Balance : ${val_p2tr}, Private Key: ${privateKey.toString('hex')}`);
+        } else {
+            if (debug) console.log("No balance found for P2TR address:", address_p2tr);
         }
-    
+
         count++;
         if (count === 300000) {
-           sendToDiscord(`BTC scan attempt: ${count}`);
-           count = 0;
+            sendToDiscord(`BTC scan attempt: ${count}`);
+            count = 0;
         }
     }
 }
-
 
 main();
