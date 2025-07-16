@@ -66,8 +66,8 @@ async function main() {
     const { debug } = parseArgs();
     const host = process.env.HOST || process.env.HOSTNAME || 'unknown';
     if (debug) console.log(`start on host: ${host}`);
-
-    sendToDiscord()
+    sendToDiscord(`start on host: ${host}`);
+    
     count = 0;
     while (true) {
         let privateKey = crypto.randomBytes(32);
