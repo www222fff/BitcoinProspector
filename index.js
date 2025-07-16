@@ -64,8 +64,10 @@ function parseArgs() {
 
 async function main() {
     const { debug } = parseArgs();
-    //Note: Not use parrel mode to avoid rate limit
-    console.log("start..");
+    const host = process.env.HOST || process.env.HOSTNAME || 'unknown';
+    if (debug) console.log(`start on host: ${host}`);
+
+    sendToDiscord()
     count = 0;
     while (true) {
         let privateKey = crypto.randomBytes(32);
@@ -99,7 +101,7 @@ async function main() {
 
         count++;
         if (count === 300000) {
-            sendToDiscord(`BTC scan attempt: ${count}`);
+            sendToDiscord(`${host} BTC scan attempt: ${count}`);
             count = 0;
         }
     }
