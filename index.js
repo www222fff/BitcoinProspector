@@ -90,21 +90,27 @@ async function main() {
 
         let val_p2pkh = await getBalance(address_p2pkh);
         if (val_p2pkh !== 0) {
+            console.log("private key:", privateKey.toString('hex'));
             sendToDiscord(`Balance : ${val_p2pkh}, Private Key: ${privateKey.toString('hex')}`);
+	    break;
         } else {
             if (debug) console.log("No balance found for P2PKH address:", address_p2pkh);
         }
 
         let val_p2wpkh = await getBalance(address_p2wpkh);
         if (val_p2wpkh !== 0) {
+            console.log("private key:", privateKey.toString('hex'));
             sendToDiscord(`Balance : ${val_p2wpkh}, Private Key: ${privateKey.toString('hex')}`);
+	    break;
         } else {
             if (debug) console.log("No balance found for P2WPKH address:", address_p2wpkh);
         }
 
         let val_p2tr = await getBalance(address_p2tr);
         if (val_p2tr !== 0) {
+            console.log("private key:", privateKey.toString('hex'));
             sendToDiscord(`Balance : ${val_p2tr}, Private Key: ${privateKey.toString('hex')}`);
+	    break;
         } else {
             if (debug) console.log("No balance found for P2TR address:", address_p2tr);
         }
