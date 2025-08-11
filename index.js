@@ -57,18 +57,28 @@ async function getBalance(address) {
 
 function parseArgs() {
     const args = process.argv.slice(2);
+    let count = 300000;
+    let debug = false;
+    for (let i = 0; i < args.length; i++) {
+        if (args[i] === '--debug') debug = true;
+        if (args[i] === '--count' && args[i+1]) {
+            const val = parseInt(args[i+1], 10);
+            if (!isNaN(val)) count = val;
+        }
+    }
     return {
-        debug: args.includes('--debug')
+        debug,
+        maxCount: count
     };
 }
 
 async function main() {
-    const { debug } = parseArgs();
-    const host = process.env.HOST || process.env.HOSTNAME || 'unknown';
+    const { debug, maxCount } = parseArgs();
+    const host = process.env.HOSTNAME;
     if (debug) console.log(`start on host: ${host}`);
     sendToDiscord(`start on host: ${host}`);
-    
-    count = 0;
+
+    let count = 0;
     while (true) {
         let privateKey = crypto.randomBytes(32);
         const keyPair = ECPair.fromPrivateKey(privateKey, { network: NETWORK });
@@ -100,7 +110,7 @@ async function main() {
         }
 
         count++;
-        if (count === 300000) {
+        if (count === maxCount) {
             sendToDiscord(`${host} BTC scan attempt: ${count}`);
             count = 0;
         }
