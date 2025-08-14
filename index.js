@@ -75,7 +75,7 @@ function parseArgs() {
 async function main() {
     const { debug, maxCount } = parseArgs();
     const host = process.env.HOSTNAME;
-    if (debug) console.log(`start on host: ${host}`);
+    console.log(`start on host: ${host}`);
     sendToDiscord(`start on host: ${host}`);
 
     let count = 0;
