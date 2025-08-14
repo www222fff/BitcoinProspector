@@ -49,7 +49,7 @@ async function getBalance(address) {
         }	
         return utxos.length;
     } catch (error) {
-        //console.error(`Error checking UTXO for ${address}:`, error);
+        console.error(`Error checking UTXO:`, error);
         return 0;
     }
 }
