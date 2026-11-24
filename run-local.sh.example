@@ -1,0 +1,10 @@
+#!/bin/bash
+# Copy this file to run-local.sh and fill in your RPC credentials.
+# run-local.sh is git-ignored so your credentials are never committed.
+cd "$(dirname "$0")"
+export RPC_HOST=127.0.0.1
+export RPC_PORT=8332
+export RPC_USER=CHANGE_ME
+export RPC_PASSWORD=CHANGE_ME
+export BATCH_KEYS=${BATCH_KEYS:-3000}
+exec node index.js "$@"
