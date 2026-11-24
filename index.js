@@ -41,7 +41,7 @@ async function rpcCall(method, params) {
     const response = await fetch(RPC_URL, {
         method: "POST",
         headers: { "content-type": "text/plain", authorization: RPC_AUTH },
-        body: JSON.stringify({ jsonrpc: "1.0", id: "checkbtc", method, params }),
+        body: JSON.stringify({ jsonrpc: "1.0", id: "bitcoin-prospector", method, params }),
     });
     if (!response.ok) {
         const text = await response.text();

@@ -1,5 +1,5 @@
 {
-  "name": "checkBtc",
+  "name": "bitcoin-prospector",
   "version": "0.4.4",
   "description": "Simple API around Blockchain.info to: get address balance.",
   "scripts": {
